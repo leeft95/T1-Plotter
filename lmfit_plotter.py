@@ -70,7 +70,7 @@ for i in range(len(files)):
     params = Parameters()
     params.add('a', value= 0.1, min=-1, max=1) 
     params.add('b', value= 1e-5, min=1e-6, max=1e-3)
-    params.add('c', value= 0.7, min=0, max=1) 
+    params.add('c', value= 0.5, min=0.3, max=2) 
     params.add('d', value= 0.9, min=-1, max=1)
     print(titlename)
     result = minimize(func,params,args=(tau_0,norm_sig_0),scale_covar=True)
