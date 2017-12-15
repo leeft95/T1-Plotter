@@ -4,7 +4,6 @@ from pprint import pprint
 import numpy as np
 import math as math
 import sympy as sym
-import backend as back
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -75,7 +74,6 @@ for i in range(len(files)):
     params.add('d', value= 0.9, min=-1, max=1)
     print(titlename)
     result = minimize(func,params,args=(tau_0,norm_sig_0),scale_covar=True)
-    a2,b2,c2,d2 = np.sqrt(np.diag(result.covar))
     #print(result.params['b'].value)
     
 
@@ -123,9 +121,9 @@ dec_0 = np.array(dec,dtype=float)
 dec_0 = dec_0/1000
 plt.figure()
 plt.hist(dec_0,edgecolor='black', linewidth=1,bins = 120)
-ax = plt.axes()
-ax.xaxis.set_major_locator(ticker.MultipleLocator(0.01))
-ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.0005))
+#ax = plt.axes()
+#ax.xaxis.set_major_locator(ticker.MultipleLocator(0.01))
+#ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.0005))
 plt.xlim(xmin=0)
 plt.xlabel('T1(ms)')
 plt.ylabel('Frequency')
