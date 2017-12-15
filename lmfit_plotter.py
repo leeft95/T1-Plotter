@@ -81,7 +81,8 @@ for i in range(len(files)):
 
     decay_const = (1/result.params['b'].value)/1000
     dec.append(decay_const)
-    error_const = (result.params['b'].stderr/decay_const)*(1/decay_const)
+    error_const = (((result.params['b'].stderr/result.params['b'].value)*(1/result.params['b'].value)))/1000
+    print(error_const)
     output.write(titlename + '\t' + str(decay_const)+ '\t'+ str(error_const) + '\t' +str(result.params['c'].value) +'\t'+ str(result.params['c'].stderr))
     #print(str(result.ier()))
     #result.params.pretty_print(oneline=False, colwidth=8, precision=4, fmt='g', columns=['value','stderr'])
@@ -107,53 +108,6 @@ for i in range(len(files)):
     plt.savefig(str(filename))
     plt.close()
     
-    """
-    
-    
-    print('\n')
-
-    
-    
-    
-    guess = (a,b,c,d)
-    popt, pcov = curve_fit(back.func,tau_0,norm_sig_0,p0=guess,maxfev=200000)
-    #output.write("f(x) = %0.1f + %0.2fe^%gt" % (popt[2], popt[0], popt[1]))
-
-
-    #xs = sym.Symbol('\lambda')    
-    #tex = sym.latex(back.funcs(xs,*popt)).replace('$', '')
-    a2,b2,c2,d2 = np.sqrt(np.diag(pcov))
-    a1,b1,c1,d1 = popt
-    #inv = 1.0/np.exp(1)
-    print (b1)
-    decay_const = 1/b1
-    power = c1
-    error_const = (b2/b1)*(1/b1)
-    #print (error_const)
-
-    percent_error = 100.0*(error_const/decay_const)
-    output.write(titlename + "\t\t\t%.3f\t\t\t%.3f\t\t\t%.3f\n" % (decay_const,error_const,power))
-    #output.write("Error in decay constant = %.3f\n" % error_const)
-    #output.write("Percent Error in decay constant = %.3f\n" % percent_error)
-
-    pyplot.figure()
-    pyplot.subplot(111)
-    pyplot.errorbar(tau,norm_sig,yerr = yer,fmt = 'x')
-    pyplot.plot(tau_0,back.func(tau_0,*popt), 'r-', label = ('T1 = %.3fns' % decay_const))
-    #pyplot.plot(tau,y_opt, 'r-', label = ('T1 = %.3fns' % decay_const))
-    pyplot.title(str(titlename))
-    pyplot.legend(loc='best')
-    pyplot.xlim(xmin=0)
-    pyplot.xlabel('Tau time (ns)')
-    pyplot.ylabel('Normalised Signal')
-    """
-    #Fix code to histogram data
-    """
-    #hist, bins=np.histogram(rdf, bins=100,density=True)
-    #bincenters = 0.5*(bins[1:]+bins[:-1])
-    pyplot.savefig(str(filename))
-    pyplot.close()
-    """
     del tau[:]
     del norm_sig[:]
     del norm_sig1[:]
@@ -167,7 +121,6 @@ for i in range(len(files)):
     
 dec_0 = np.array(dec,dtype=float)
 dec_0 = dec_0/1000
-print(str(dec_0))
 plt.figure()
 plt.hist(dec_0,edgecolor='black', linewidth=1,bins = 120)
 ax = plt.axes()
@@ -176,5 +129,5 @@ ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.0005))
 plt.xlim(xmin=0)
 plt.xlabel('T1(ms)')
 plt.ylabel('Frequency')
-plt.savefig('test')
+plt.savefig('T1 Histogram')
 plt.close()
