@@ -1,12 +1,13 @@
 import os
 import sys
 from pprint import pprint
-#import matplotlib.pyplot as pyplot
 import numpy as np
 import math as math
 import sympy as sym
 import backend as back
 from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from lmfit import *
 
 def func(params,x,data):
@@ -20,7 +21,8 @@ folders = []
 files = []
 outname = []
 output = open('T1_data.txt','w')
-#output.write("Particle\t\t\t\tT1\t\t\tError\t\t\tPower\n")
+output2 = open('T1_Fit_Stats.txt','w')
+output.write("Particle\tT1(ms)\terror\tPower\terror\n")
 i = 0
 m = 0
 tau = []
@@ -28,6 +30,7 @@ norm_sig = []
 tau1 = []
 norm_sig1 = []
 yer = []
+dec = []
 found_data = False
 #print ('Determine guess parameters that fit the formula f(x) = ae^(bx)^d + c')
 #b = float(input('enter the parameter b: '))
@@ -72,33 +75,37 @@ for i in range(len(files)):
     params.add('d', value= 0.9, min=-1, max=1)
     print(titlename)
     result = minimize(func,params,args=(tau_0,norm_sig_0),scale_covar=True)
+    a2,b2,c2,d2 = np.sqrt(np.diag(result.covar))
+    #print(result.params['b'].value)
+    
+
+    decay_const = (1/result.params['b'].value)/1000
+    dec.append(decay_const)
+    error_const = (result.params['b'].stderr/decay_const)*(1/decay_const)
+    output.write(titlename + '\t' + str(decay_const)+ '\t'+ str(error_const) + '\t' +str(result.params['c'].value) +'\t'+ str(result.params['c'].stderr))
     #print(str(result.ier()))
-    output.write(titlename + '\n')
-    result.params.pretty_print(oneline=False, colwidth=8, precision=4, fmt='g', columns=['value','stderr'])
+    #result.params.pretty_print(oneline=False, colwidth=8, precision=4, fmt='g', columns=['value','stderr'])
     final = norm_sig_0 + result.residual
     #print (fit_report(result,show_correl=False))
-    output.write(fit_report(result,show_correl=False))
+    output2.write(titlename + '\n')
+    output2.write(fit_report(result,show_correl=False)+'\n\n')
     #output.write(y)
     output.write('\n\n')
     
     
-    try:
-        import matplotlib.pyplot as plt
-        plt.figure()
-        plt.subplot(111)
-        plt.plot(tau_0, norm_sig_0, 'k+')
-        plt.errorbar(tau,norm_sig,yerr = yer,fmt = 'x')
-        plt.plot(tau_0, final, 'r')
-        plt.title(str(titlename))
-        plt.legend(loc='best')
-        plt.xlim(xmin=0)
-        plt.xlabel('Tau time (ns)')
-        plt.ylabel('Normalised Signal')
-        plt.savefig(str(filename))
-        plt.close()
-        
-    except:
-        pass
+    
+    plt.figure()
+    plt.subplot(111)
+    plt.plot(tau_0, norm_sig_0, 'k+')
+    plt.errorbar(tau,norm_sig,yerr = yer,fmt = 'x')
+    plt.plot(tau_0, final, 'r',label=('T1 = %.3fms' % decay_const))
+    plt.title(str(titlename))
+    plt.legend(loc='best')
+    plt.xlim(xmin=0)
+    plt.xlabel('Tau time (ns)')
+    plt.ylabel('Normalised Signal')
+    plt.savefig(str(filename))
+    plt.close()
     
     """
     
@@ -151,9 +158,23 @@ for i in range(len(files)):
     del norm_sig[:]
     del norm_sig1[:]
     del yer[:]
+
      
     
 
 
     i += 1
     
+dec_0 = np.array(dec,dtype=float)
+dec_0 = dec_0/1000
+print(str(dec_0))
+plt.figure()
+plt.hist(dec_0,edgecolor='black', linewidth=1,bins = 120)
+ax = plt.axes()
+ax.xaxis.set_major_locator(ticker.MultipleLocator(0.01))
+ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.0005))
+plt.xlim(xmin=0)
+plt.xlabel('T1(ms)')
+plt.ylabel('Frequency')
+plt.savefig('test')
+plt.close()
