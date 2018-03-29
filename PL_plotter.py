@@ -128,10 +128,13 @@ for i in range(len(files)):
     ax.axhline((mean(sig) + math.sqrt(mean(sig))),color = 'g',label = 'shot noise upper bound')
     ax.axhline((mean(sig) - math.sqrt(mean(sig))),color = 'y',label = 'shot noise lower bound')
     plt.title(str(titlename))
-    plt.legend()
+    art = []
+    lgd = plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    art.append(lgd)
     plt.ylabel('Signal(c/ms)')
     plt.xlabel('Time(s)')
-    plt.savefig('new_' + titlename + '.png')
+    plt.savefig('new_' + titlename + '.png',additional_artists=art,
+    bbox_inches="tight")
     plt.close()
 
     del tau[:]
