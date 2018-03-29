@@ -61,7 +61,7 @@ for i in range(len(files)):
     sig.append(float(norm_sig[0]))
                
     for z in range(len(tau) - 1):
-               if (tau[z] <= 20.0):
+               if (tau[z] <= 80.0):
                    tau1.append(tau1[z] + (1/101))
                    sig.append(norm_sig[z+1])
 
@@ -121,7 +121,8 @@ for i in range(len(files)):
     plt.savefig(outfile)
     plt.close()
 
-    plt.plot(tau1,sig,'-',label = 'time trace')
+
+    plt.plot(tau1,sig,'-',label = 'time trace',color = '#a2cffe')
     #plt.xlim(0,40)
     ax = plt.axes()
     ax.axhline(mean(sig),color = 'r',label = 'mean')
